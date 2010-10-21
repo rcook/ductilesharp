@@ -1,0 +1,13 @@
+<project name="common" basedir=".">
+  <dirname property="common.basedir" file="${ant.file.common}"/>
+  <property file="${common.basedir}/common.properties"/>
+  <property name="csc-path" location="${tool-dir}/${csc-file-name}"/>
+  <property name="mono-path" location="${tool-dir}/${mono-file-name}"/>
+  <property name="nunit-console-path" location="${tool-dir}/${nunit-console-file-name}"/>
+  <property name="bin-dir" location="${common.basedir}/bin"/>
+  <property name="bin-configuration-dir" location="${bin-dir}/${configuration}"/>
+  <property name="build-dir" location="build"/>
+  <property name="build-configuration-dir" location="${build-dir}/${configuration}"/>
+  <property name="nunit-framework-path" location="${nunit-lib-dir}/nunit.framework.dll"/>
+</project>
+

@@ -1,0 +1,26 @@
+<project name="src" basedir="." default="binplace">
+  <import file="../../common.xml"/>
+
+  <property name="ref-paths" value="${nunit-framework-path};${bin-configuration-dir}/Mono.DuctileSharp.dll"/>
+  <property name="target-path" location="${build-configuration-dir}/Mono.DuctileSharp.NUnit.dll"/>
+
+  <target name="clean">
+    <delete dir="${build-dir}"/>
+  </target>
+
+  <target name="prepare">
+    <mkdir dir="${build-configuration-dir}"/>
+  </target>
+
+  <target name="compile" depends="prepare">
+    <csc executable="${csc-path}" targetType="library" destFile="${target-path}" references="${ref-paths}">
+      <src dir="." includes="*.cs"/>
+    </csc>
+  </target>
+
+  <target name="binplace" depends="compile">
+    <copy file="${target-path}" toDir="${bin-configuration-dir}" preservelastmodified="true"/>
+    <copy file="${target-path}.mdb" toDir="${bin-configuration-dir}" preservelastmodified="true"/>
+  </target>
+</project>
+

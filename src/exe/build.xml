@@ -1,0 +1,27 @@
+<project name="src" basedir="." default="binplace">
+  <import file="../../common.xml"/>
+
+  <property name="ref-paths" value="${bin-configuration-dir}/Mono.DuctileSharp.dll"/>
+  <property name="target-path" location="${build-configuration-dir}/ductilesharp.exe"/>
+  <property name="main-class" value="Mono.DuctileSharp.Program"/>
+
+  <target name="clean">
+    <delete dir="${build-dir}"/>
+  </target>
+
+  <target name="prepare">
+    <mkdir dir="${build-configuration-dir}"/>
+  </target>
+
+  <target name="compile" depends="prepare">
+    <csc executable="${csc-path}" targetType="exe" destFile="${target-path}" mainClass="${main-class}" references="${ref-paths}">
+      <src dir="." includes="*.cs"/>
+    </csc>
+  </target>
+
+  <target name="binplace" depends="compile">
+    <copy file="${target-path}" toDir="${bin-configuration-dir}" preservelastmodified="true"/>
+    <copy file="${target-path}.mdb" toDir="${bin-configuration-dir}" preservelastmodified="true"/>
+  </target>
+</project>
+

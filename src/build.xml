@@ -1,0 +1,16 @@
+<project name="src" basedir="." default="binplace">
+  <import file="../common.xml"/>
+
+  <target name="clean">
+    <ant dir="dll" target="clean" inheritAll="false"/>
+    <ant dir="nunit-dll" target="clean" inheritAll="false"/>
+    <ant dir="exe" target="clean" inheritAll="false"/>
+  </target>
+
+  <target name="binplace">
+    <ant dir="dll" target="binplace" inheritAll="false"/>
+    <ant dir="nunit-dll" target="binplace" inheritAll="false"/>
+    <ant dir="exe" target="binplace" inheritAll="false"/>
+  </target>
+</project>
+

@@ -1,0 +1,25 @@
+<project name="root" basedir="." default="binplace">
+  <import file="common.xml"/>
+
+  <target name="clean">
+    <ant dir="src" target="clean" inheritAll="false"/>
+    <delete dir="${bin-dir}"/>
+  </target>
+
+  <target name="binplace">
+    <ant dir="src" target="binplace" inheritAll="false"/>
+  </target>
+
+  <target name="run" depends="binplace">
+    <exec executable="${mono-path}" dir="${bin-configuration-dir}" failonerror="true">
+      <arg value="ductilesharp.exe"/>
+    </exec>
+  </target>
+
+  <target name="test" depends="binplace">
+    <exec executable="${nunit-console-path}" dir="${bin-configuration-dir}" failonerror="true">
+      <arg value="Mono.DuctileSharp.NUnit.dll"/>
+    </exec>
+  </target>
+</project>
+
