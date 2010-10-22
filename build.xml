@@ -11,7 +11,7 @@
   </target>
 
   <target name="run" depends="binplace">
-    <exec executable="${mono-path}" dir="${bin-configuration-dir}" failonerror="true">
+    <exec executable="${stable-mono-path}" dir="${bin-configuration-dir}" failonerror="true">
       <arg value="ductilesharp.exe"/>
     </exec>
   </target>
@@ -20,6 +20,10 @@
     <exec executable="${nunit-console-path}" dir="${bin-configuration-dir}" failonerror="true">
       <arg value="Mono.DuctileSharp.NUnit.dll"/>
     </exec>
+  </target>
+
+  <target name="install">
+    <fail message="&quot;install&quot; target is not implemented yet."/>
   </target>
 </project>
 

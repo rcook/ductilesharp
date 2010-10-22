@@ -1,13 +1,58 @@
 <project name="common" basedir=".">
-  <dirname property="common.basedir" file="${ant.file.common}"/>
-  <property file="${common.basedir}/common.properties"/>
-  <property name="csc-path" location="${tool-dir}/${csc-file-name}"/>
-  <property name="mono-path" location="${tool-dir}/${mono-file-name}"/>
-  <property name="nunit-console-path" location="${tool-dir}/${nunit-console-file-name}"/>
-  <property name="bin-dir" location="${common.basedir}/bin"/>
+  <dirname property="common.base-dir" file="${ant.file.common}"/>
+  <property file="${common.base-dir}/common.properties"/>
+
+  <property name="configuration" value=""/>
+  <condition property="configuration.found">
+    <not>
+      <equals arg1="${configuration}" arg2=""/>
+    </not>
+  </condition>
+  <fail unless="configuration.found" message="Must specify &quot;configuration&quot; in &quot;common.properties&quot;"/>
+
+  <property name="install-path" value=""/>
+  <condition property="install-path.found">
+    <not>
+      <equals arg1="${install-path}" arg2=""/>
+    </not>
+  </condition>
+  <fail unless="install-path.found" message="Must specify &quot;install-path&quot; in &quot;common.properties&quot;"/>
+
+  <property name="nunit-console-path" value=""/>
+  <condition property="nunit-console-path.found">
+    <not>
+      <equals arg1="${nunit-console-path}" arg2=""/>
+    </not>
+  </condition>
+  <fail unless="nunit-console-path.found" message="Must specify &quot;nunit-console-path&quot; in &quot;common.properties&quot;"/>
+
+  <property name="nunit-framework-path" value=""/>
+  <condition property="nunit-framework-path.found">
+    <not>
+      <equals arg1="${nunit-framework-path}" arg2=""/>
+    </not>
+  </condition>
+  <fail unless="nunit-framework-path.found" message="Must specify &quot;nunit-framework-path&quot; in &quot;common.properties&quot;"/>
+
+  <property name="stable-gmcs-path" value=""/>
+  <condition property="stable-gmcs-path.found">
+    <not>
+      <equals arg1="${stable-gmcs-path}" arg2=""/>
+    </not>
+  </condition>
+  <fail unless="stable-gmcs-path.found" message="Must specify &quot;stable-gmcs-path&quot; in &quot;common.properties&quot;"/>
+
+  <property name="stable-mono-path" value=""/>
+  <condition property="stable-mono-path.found">
+    <not>
+      <equals arg1="${stable-mono-path}" arg2=""/>
+    </not>
+  </condition>
+  <fail unless="stable-mono-path.found" message="Must specify &quot;stable-mono-path&quot; in &quot;common.properties&quot;"/>
+
+  <property name="bin-dir" location="${common.base-dir}/bin"/>
   <property name="bin-configuration-dir" location="${bin-dir}/${configuration}"/>
   <property name="build-dir" location="build"/>
   <property name="build-configuration-dir" location="${build-dir}/${configuration}"/>
-  <property name="nunit-framework-path" location="${nunit-lib-dir}/nunit.framework.dll"/>
 </project>
 

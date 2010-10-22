@@ -12,7 +12,7 @@
   </target>
 
   <target name="compile" depends="prepare">
-    <csc executable="${csc-path}" targetType="library" destFile="${target-path}">
+    <csc executable="${stable-gmcs-path}" targetType="library" destFile="${target-path}">
       <src dir="." includes="*.cs"/>
     </csc>
   </target>

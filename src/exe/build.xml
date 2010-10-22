@@ -14,7 +14,7 @@
   </target>
 
   <target name="compile" depends="prepare">
-    <csc executable="${csc-path}" targetType="exe" destFile="${target-path}" mainClass="${main-class}" references="${ref-paths}">
+    <csc executable="${stable-gmcs-path}" targetType="exe" destFile="${target-path}" mainClass="${main-class}" references="${ref-paths}">
       <src dir="." includes="*.cs"/>
     </csc>
   </target>
