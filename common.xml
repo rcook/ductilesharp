@@ -1,5 +1,9 @@
 <project name="common" basedir=".">
   <dirname property="common.base-dir" file="${ant.file.common}"/>
+
+  <available file="${common.base-dir}/common.properties" property="properties.found"/>
+  <fail unless="properties.found" message="You must create &quot;common.properties&quot; by hand or using the &quot;configure&quot; script"/>
+
   <property file="${common.base-dir}/common.properties"/>
 
   <property name="configuration" value=""/>
