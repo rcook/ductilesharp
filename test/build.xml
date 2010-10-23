@@ -1,8 +1,24 @@
 <project name="src" basedir="." default="test">
   <import file="../common.xml"/>
 
+  <target name="clean">
+    <ant dir="01-hello-world" target="clean" inheritAll="false"/>
+    <ant dir="02-dynamic" target="clean" inheritAll="false"/>
+  </target>
+
+  <target name="compile">
+    <ant dir="01-hello-world" target="compile" inheritAll="false"/>
+    <ant dir="02-dynamic" target="compile" inheritAll="false"/>
+  </target>
+
+  <target name="run">
+    <ant dir="01-hello-world" target="run" inheritAll="false"/>
+    <ant dir="02-dynamic" target="run" inheritAll="false"/>
+  </target>
+
   <target name="test">
     <ant dir="01-hello-world" target="test" inheritAll="false"/>
+    <ant dir="02-dynamic" target="test" inheritAll="false"/>
   </target>
 </project>
 

@@ -1,3 +1,1 @@
-WARNING: The runtime version supported by this application is unavailable.
-Using default runtime: v1.1.4322
 Hello world!

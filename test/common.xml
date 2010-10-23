@@ -1,0 +1,40 @@
+<project name="test-common" basedir="." default="compile">
+  <import file="../common.xml"/>
+
+  <property name="ref-paths" value="${bin-configuration-dir}/Mono.DuctileSharp.dll"/>
+  <property name="target-path" location="${build-configuration-dir}/${ant.project.name}.exe"/>
+
+  <target name="clean">
+    <delete dir="${build-dir}"/>
+  </target>
+
+  <target name="prepare">
+    <mkdir dir="${build-configuration-dir}"/>
+  </target>
+
+  <target name="compile" depends="prepare">
+    <csc executable="${target-dmcs-path}" targetType="exe" destFile="${target-path}" mainClass="${main-class}" references="${ref-paths}" extraOptions="/detype">
+      <src dir="." includes="*.cs"/>
+    </csc>
+  </target>
+
+  <target name="run" depends="clean,compile">
+    <exec executable="${target-mono-path}" dir="${bin-configuration-dir}" failonerror="true">
+      <env key="MONO_PATH" path="${target-lib-dir}"/>
+      <arg value="${target-path}"/>
+    </exec>
+  </target>
+
+  <target name="test" depends="clean,compile">
+    <delete file="${build-configuration-dir}/actual_output.txt" quiet="true"/>
+    <exec executable="${target-mono-path}" dir="${build-configuration-dir}" output="${build-configuration-dir}/actual_output.txt" failonerror="true">
+      <env key="MONO_PATH" path="${target-lib-dir}"/>
+      <arg value="${target-path}"/>
+    </exec>
+    <exec executable="diff" dir="${build-configuration-dir}" failonerror="true">
+      <arg value="${basedir}/expected_output.txt"/>
+      <arg value="${build-configuration-dir}/actual_output.txt"/>
+    </exec>
+  </target>
+</project>
+

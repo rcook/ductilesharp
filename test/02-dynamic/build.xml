@@ -1,0 +1,6 @@
+<project name="02-dynamic" basedir="." default="compile">
+  <import file="../common.xml"/>
+
+  <property name="main-class" value="Dynamic.Program"/>
+</project>
+
