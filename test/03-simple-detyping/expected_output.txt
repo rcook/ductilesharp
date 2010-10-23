@@ -1,0 +1,7 @@
+value = BEGIN : System.String
+value = 0 : System.Int32
+value = 1 : System.Int32
+value = 2 : System.Int32
+value = 3 : System.Int32
+value = 4 : System.Int32
+value = END : System.String

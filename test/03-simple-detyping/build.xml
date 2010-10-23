@@ -1,0 +1,6 @@
+<project name="03-simple-detyping" basedir="." default="compile">
+  <import file="../common.xml"/>
+
+  <property name="main-class" value="SimpleDetyping.Program"/>
+</project>
+

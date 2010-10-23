@@ -26,6 +26,30 @@ namespace Mono.DuctileSharp
 
     void IAddIn.ApplyTypeTransform(ITypeExpressionFactory typeExprFactory, IEnumerable<ITypeInfo> types)
     {
+      if (_detype)
+      {
+        foreach (ITypeInfo type in types)
+        {
+          Console.WriteLine("> {0} : {1}", type.Name, type.GetType().FullName);
+          foreach (IMethodInfo method in type.Methods)
+          {
+            Console.WriteLine(">> {0} : {1}", method.Name, method.GetType().FullName);
+            foreach (IParameterInfo parameter in method.Parameters)
+            {
+              Console.WriteLine(">>> {0} : {1}", parameter.Name, parameter.GetType().FullName);
+            }
+            if (!"Main".Equals(method.Name, StringComparison.Ordinal))
+            {
+              foreach (IParameterInfo parameter in method.Parameters)
+              {
+                Console.WriteLine("Detyped: {0} : {1} -> dynamic", parameter.Name, parameter.TypeExpression);
+                ITypeExpression typeExpr = typeExprFactory.CreateSimpleTypeExpression("dynamic", parameter.TypeExpression.Location);
+                parameter.TypeExpression = typeExpr;
+              }
+            }
+          }
+        }
+      }
     }
 
     #endregion IAddIn Members
