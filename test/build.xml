@@ -1,28 +1,34 @@
 <project name="src" basedir="." default="test">
   <import file="../common.xml"/>
 
+  <property name="subdirs" value="01-hello-world:02-dynamic:03-simple-detyping"/>
+
   <target name="clean">
-    <ant dir="01-hello-world" target="clean" inheritAll="false"/>
-    <ant dir="02-dynamic" target="clean" inheritAll="false"/>
-    <ant dir="03-simple-detyping" target="clean" inheritAll="false"/>
+    <foreach list="${subdirs}" delimiter=":" param="subdir" target="do_clean"/>
+  </target>
+  <target name="do_clean">
+    <ant dir="${subdir}" target="clean" inheritAll="false"/>
   </target>
 
   <target name="compile">
-    <ant dir="01-hello-world" target="compile" inheritAll="false"/>
-    <ant dir="02-dynamic" target="compile" inheritAll="false"/>
-    <ant dir="03-simple-detyping" target="compile" inheritAll="false"/>
+    <foreach list="${subdirs}" delimiter=":" param="subdir" target="do_compile"/>
+  </target>
+  <target name="do_compile">
+    <ant dir="${subdir}" target="compile" inheritAll="false"/>
   </target>
 
   <target name="run">
-    <ant dir="01-hello-world" target="run" inheritAll="false"/>
-    <ant dir="02-dynamic" target="run" inheritAll="false"/>
-    <ant dir="03-simple-detyping" target="run" inheritAll="false"/>
+    <foreach list="${subdirs}" delimiter=":" param="subdir" target="do_run"/>
+  </target>
+  <target name="do_run">
+    <ant dir="${subdir}" target="run" inheritAll="false"/>
   </target>
 
   <target name="test">
-    <ant dir="01-hello-world" target="test" inheritAll="false"/>
-    <ant dir="02-dynamic" target="test" inheritAll="false"/>
-    <ant dir="03-simple-detyping" target="test" inheritAll="false"/>
+    <foreach list="${subdirs}" delimiter=":" param="subdir" target="do_test"/>
+  </target>
+  <target name="do_test">
+    <ant dir="${subdir}" target="test" inheritAll="false"/>
   </target>
 </project>
 

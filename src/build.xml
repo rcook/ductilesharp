@@ -1,16 +1,27 @@
 <project name="src" basedir="." default="binplace">
   <import file="../common.xml"/>
 
+  <property name="subdirs" value="dll:nunit-dll:exe"/>
+
   <target name="clean">
-    <ant dir="dll" target="clean" inheritAll="false"/>
-    <ant dir="nunit-dll" target="clean" inheritAll="false"/>
-    <ant dir="exe" target="clean" inheritAll="false"/>
+    <foreach list="${subdirs}" delimiter=":" param="subdir" target="do_clean"/>
+  </target>
+  <target name="do_clean">
+    <ant dir="${subdir}" target="clean" inheritAll="false"/>
+  </target>
+
+  <target name="compile">
+    <foreach list="${subdirs}" delimiter=":" param="subdir" target="do_compile"/>
+  </target>
+  <target name="do_compile">
+    <ant dir="${subdir}" target="compile" inheritAll="false"/>
   </target>
 
   <target name="binplace">
-    <ant dir="dll" target="binplace" inheritAll="false"/>
-    <ant dir="nunit-dll" target="binplace" inheritAll="false"/>
-    <ant dir="exe" target="binplace" inheritAll="false"/>
+    <foreach list="${subdirs}" delimiter=":" param="subdir" target="do_binplace"/>
+  </target>
+  <target name="do_binplace">
+    <ant dir="${subdir}" target="binplace" inheritAll="false"/>
   </target>
 </project>
 

@@ -3,8 +3,15 @@
 
   <available file="${common.base-dir}/common.properties" property="properties.found"/>
   <fail unless="properties.found" message="You must create &quot;common.properties&quot; by hand or using the &quot;configure&quot; script"/>
-
   <property file="${common.base-dir}/common.properties"/>
+
+  <property name="ant-contrib-path" value=""/>
+  <condition property="ant-contrib-path.found">
+    <not>
+      <equals arg1="${ant-contrib-path}" arg2=""/>
+    </not>
+  </condition>
+  <fail unless="ant-contrib-path.found" message="Must specify &quot;ant-contrib-path&quot; in &quot;common.properties&quot;"/>
 
   <property name="configuration" value=""/>
   <condition property="configuration.found">
@@ -61,6 +68,12 @@
     </not>
   </condition>
   <fail unless="target-mono-path.found" message="Must specify &quot;target-mono-path&quot; in &quot;common.properties&quot;"/>
+
+  <taskdef resource="net/sf/antcontrib/antcontrib.properties">
+    <classpath>
+      <pathelement location="${ant-contrib-path}"/>
+    </classpath>
+  </taskdef>
 
   <property name="backup-dir" location="${common.base-dir}/backups"/>
   <property name="bin-dir" location="${common.base-dir}/bin"/>
