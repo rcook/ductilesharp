@@ -6,6 +6,19 @@ def run_command(cmd, throw_on_error = true)
   [$?.to_i, res.chomp]
 end
 
+def parse_version_str(str)
+  segments = str.split('.', -1)
+  raise ArgumentError.new if segments.size < 1 || segments.size > 4
+  (0..3).collect do |i|
+    if i >= segments.size
+      nil
+    else
+      raise ArgumentError.new unless segments[i] =~ /^(0|[1-9][0-9]*)$/
+      Integer($1)
+    end
+  end
+end
+
 def find_command(name)
   code, res = run_command("which #{name}", false)
   if code == 0
@@ -17,7 +30,9 @@ def find_command(name)
   end
 end
 
-def find_command_version(messages, name, min_major, min_minor, &block)
+def find_command_version(messages, name, version_str, &block)
+  min_major, min_minor, min_build, min_revision = parse_version_str(version_str)
+
   path = find_command(name)
   if !path
     messages << "Could not find \"#{name}\" on path."
@@ -31,7 +46,7 @@ def find_command_version(messages, name, min_major, min_minor, &block)
   end
 
   major, minor, build, revision = res
-  if major < min_major || minor < min_minor
+  if major < min_major || major == min_major && minor < min_minor
     messages << "Please install version #{min_major}.#{min_minor} or higher of \"#{name}\"."
     return nil
   end
@@ -67,7 +82,8 @@ def get_mono_version(path)
 end
 
 def get_nunit_console_version(path)
-  code, res = run_command("#{path} -help", true)
+  # Remove C:\NUnitPrimaryTrace.txt: this bug should be fixed in NUnit 2.5.
+  code, res = run_command("#{path} -help; rm -f 'C:\\NUnitPrimaryTrace.txt'", true)
   if res =~ /^NUnit version ([0-9]+)\.([0-9]+)\.([0-9]+)$/
     [Integer($1), Integer($2), Integer($3), nil]
   else
@@ -107,15 +123,15 @@ properties = {
   'install-path' => prefix
 }
 
-find_command_version(messages, 'ant', 1, 7) {|path| get_ant_version(path)}
+find_command_version(messages, 'ant', '1.7') {|path| get_ant_version(path)}
 
-stable_gmcs_path = find_command_version(messages, 'gmcs', 2, 4) {|path| get_gmcs_version(path)}
+stable_gmcs_path = find_command_version(messages, 'gmcs', '1.9') {|path| get_gmcs_version(path)}
 properties['stable-gmcs-path'] = stable_gmcs_path if stable_gmcs_path
 
-stable_mono_path = find_command_version(messages, 'mono', 2, 4) {|path| get_mono_version(path)}
+stable_mono_path = find_command_version(messages, 'mono', '1.9') {|path| get_mono_version(path)}
 properties['stable-mono-path'] = stable_mono_path if stable_mono_path
 
-nunit_console_path = find_command_version(messages, 'nunit-console', 2, 4) {|path| get_nunit_console_version(path)}
+nunit_console_path = find_command_version(messages, 'nunit-console', '2.4') {|path| get_nunit_console_version(path)}
 properties['nunit-console-path'] = nunit_console_path if nunit_console_path
 
 nunit_framework_path = find_nunit_framework(messages, nunit_console_path)
