@@ -2,15 +2,15 @@ using NUnit.Framework;
 
 namespace Mono.DuctileSharp
 {
-    [TestFixture]
-    public sealed class AddInTest
+  [TestFixture]
+  public sealed class AddInTest
+  {
+    [Test]
+    public void DoSomething()
     {
-        [Test]
-        public void DoSomething()
-        {
-            AddIn addIn = new AddIn();
-            addIn.DoSomething();
-        }
+      AddIn addIn = new AddIn();
+      addIn.DoSomething();
     }
+  }
 }
 

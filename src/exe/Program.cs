@@ -2,13 +2,13 @@ using System;
 
 namespace Mono.DuctileSharp
 {
-    internal static class Program
+  internal static class Program
+  {
+    private static void Main(string[] args)
     {
-        private static void Main(string[] args)
-        {
-            AddIn addIn = new AddIn();
-            addIn.DoSomething();
-        }
+      AddIn addIn = new AddIn();
+      addIn.DoSomething();
     }
+  }
 }
 
