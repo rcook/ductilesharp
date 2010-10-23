@@ -1,21 +1,29 @@
-h1. How to build DuctileSharp (22 October 2010)
+h1. How to build DuctileSharp
 
 h2. History of this document
 
 || Date || Author || Description |
-| 22 October 2010 | Richard Cook <rcook@rprodev.com> | Initial sketch of installation/build instructions. |
+| 23 October 2010 | Richard Cook <rcook@rprodev.com> | Reformatted document
+and tweaked {{ant}} instructions. |
+| 22 October 2010 | Richard Cook <rcook@rprodev.com> | Initial sketch of
+installation/build instructions. |
 
 h2. Dependencies
 
 h3. Configuring dependencies and building
 
-* I have written a Ruby script {{configure}} that is used to generate the {{common.properties}} file that specifies path to binaries used by the build.
-* Before attempting to build the project, run this script with an appropriate prefix:
+* I have written a Ruby script {{configure}} that is used to generate the
+{{common.properties}} file that specifies path to binaries used by the build.
+* Before attempting to build the project, run this script with an appropriate
+prefix:
 {noformat}
 $ ./configure --prefix=/path/to/mono
 {noformat}
-* {{--prefix}} should specify the path to your *unstable* Mono build.
-* This is the location where the DuctileSharp binaries will be placed when you make the {{install}} target.
+* {{--prefix}} should specify the path to your *unstable* Mono build and
+should typically be the same value used when calling {{autogen.sh}} prior
+to building Mono.
+* This is the location where the DuctileSharp binaries will be placed when
+you make the {{install}} target.
 * This script will check the most important dependencies.
 * Once this is done you can build DuctileSharp and run tests as follows:
 {noformat}
@@ -24,26 +32,32 @@ $ ant test
 
 h3. Operating systems
 
-* I developed all of these bits using recent versions of Ubuntu (8.04 and later).
+* I developed all of these bits using recent versions of Ubuntu (8.04
+and later).
 * It might work on Windows or other operating systems but I haven't tried it.
 * Thus command-line syntax assumes a bash-style shell.
 
 h3. Mono
 
-* Since the Mono C# compiler lacks any standard extensibility model for allowing plug-ins to interact with abstract syntax trees, I decided to extend it.
+* Since the Mono C# compiler lacks any standard extensibility model for
+allowing plug-ins to interact with abstract syntax trees, I decided to
+extend it.
 * I intend to keep this branch of Mono fairly up-to-date with the Mono trunk.
-* This "extensibility-enabled" version of Mono (which is derived from the Mono trunk) is available on GitHub and accessible via the following command line:
+* This "extensibility-enabled" version of Mono (which is derived from the Mono
+trunk) is available on GitHub and accessible via the following command line:
 
 {noformat}
 $ git clone git@github.com:rcook/mono.git
 {noformat}
 
-* You'll need to clone this repository and build it in its entirety using the standard Mono "build from Git" instructions available at: [Compiling Mono from Git](http://mono-project.com/Compiling_Mono_From_Git)
+* You'll need to clone this repository and build it in its entirety using
+the standard Mono "build from Git" instructions available at: [Compiling
+Mono from Git](http://mono-project.com/Compiling_Mono_From_Git)
 * Be sure to configure a separate prefix using {{autogen}}, for example:
 
 {noformat}
 $ cd mono
-$ ./autogen.sh --prefix=/extensible-mono
+$ ./autogen.sh --prefix=/path/to/mono
 $ make get-monolite-latest
 $ make EXTERNAL_MCS="${PWD}/mcs/class/lib/monolite/gmcs.exe"
 $ make
@@ -58,13 +72,21 @@ h3. Ant
 h3. NUnit
 
 * Install a recent build of NUnit: 2.4.7 or later should work fine.
-* The path to the NUnit framework assemblies in {{common.properties}} might needs some adjustment or it might be straightforward to add symlinks in your {{/usr/lib/cli}} directory.
+* The path to the NUnit framework assemblies in {{common.properties}} might
+needs some adjustment or it might be straightforward to add symlinks in your
+{{/usr/lib/cli}} directory.
 
 h2. Building it all
 
-* From the top-level of your repository do the following:
+* To get a basic summary of all the available build targets, run the following
+from the top level of the repository
+{noformat}
+$ ant help
+{noformat}
+* To build the default target, from the top level of your repository do
+the following:
 {noformat}
 $ ant
 {noformat}
-* Build the {{test}} target to run all the NUnit-based unit tests.
+* Build the {{nunit}} target to run all the NUnit-based unit tests.
 

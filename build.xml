@@ -1,6 +1,22 @@
 <project name="root" basedir="." default="binplace">
   <import file="common.xml"/>
 
+  <target name="help">
+    <echo>
+DuctileSharp Build Environment
+Richard Cook &lt;rcook@rprodev.com&gt;
+
+Available targets:
+clean       Cleans all targets recursively
+binplace    Places binaries in output folder after building all dependencies (default)
+run         Runs test binary after building all dependencies
+unit        Runs unit tests after building all dependencies
+uninstall   Uninstalls all binaries from install folder
+install     Installs all binaries into install folder after building all dependencies
+test        Runs end-to-end tests after building all dependencies
+    </echo>
+  </target>
+
   <target name="clean">
     <ant dir="src" target="clean" inheritAll="false"/>
     <delete dir="${bin-dir}"/>
@@ -11,19 +27,43 @@
   </target>
 
   <target name="run" depends="binplace">
-    <exec executable="${stable-mono-path}" dir="${bin-configuration-dir}" failonerror="true">
+    <exec executable="${target-mono-path}" dir="${bin-configuration-dir}" failonerror="true">
+      <env key="MONO_PATH" path="${target-lib-dir}"/>
       <arg value="ductilesharp.exe"/>
     </exec>
   </target>
 
-  <target name="test" depends="binplace">
-    <exec executable="${nunit-console-path}" dir="${bin-configuration-dir}" failonerror="true">
+  <target name="unit" depends="binplace">
+    <exec executable="${target-mono-path}" dir="${bin-configuration-dir}" failonerror="true">
+      <env key="MONO_PATH" path="${nunit-lib-dir}:${target-lib-dir}"/>
+      <arg value="${nunit-console-path}"/>
       <arg value="Mono.DuctileSharp.NUnit.dll"/>
     </exec>
   </target>
 
-  <target name="install">
-    <fail message="&quot;install&quot; target is not implemented yet."/>
+  <target name="check.uninstall">
+    <available file="${backup-dir}/dmcs.exe.config" property="perform.uninstall"/>
+  </target>
+  <target name="uninstall" depends="check.uninstall" if="perform.uninstall">
+    <exec executable="${target-gacutil-path}" failonerror="true">
+      <arg value="-u"/>
+      <arg value="Mono.DuctileSharp"/>
+    </exec>
+    <copy file="${backup-dir}/dmcs.exe.config" toFile="${target-lib-dir}/dmcs.exe.config" overwrite="true"/>
+    <delete file="${backup-dir}/dmcs.exe.config"/>
+  </target>
+
+  <target name="install" depends="binplace,uninstall">
+    <copy file="${target-lib-dir}/dmcs.exe.config" toFile="${backup-dir}/dmcs.exe.config" overwrite="false"/>
+    <copy file="${resource-dir}/dmcs.exe.config" toFile="${target-lib-dir}/dmcs.exe.config" overwrite="true"/>
+    <exec executable="${target-gacutil-path}" failonerror="true">
+      <arg value="-i"/>
+      <arg value="${bin-configuration-dir}/Mono.DuctileSharp.dll"/>
+    </exec>
+  </target>
+
+  <target name="test" depends="install">
+    <ant dir="test" target="test" inheritAll="false"/>
   </target>
 </project>
 

@@ -1,5 +1,5 @@
 syntax: regexp
-^bin\/.+$
+^(backups|bin)\/.+$
 ^common\.properties$
 \/build\/.+$
 

@@ -1,115 +1,144 @@
 #!/usr/bin/env ruby
 
-def run_command(cmd, throw_on_error = true)
-  res = `#{cmd} 2>&1`
-  raise RuntimeError.new(res) if throw_on_error && $?.to_i != 0
-  [$?.to_i, res.chomp]
-end
+module Helpers
+  def self.normalize_dir(path)
+    File.expand_path(File.basename(path), File.dirname(path))
+  end
 
-def parse_version_str(str)
-  segments = str.split('.', -1)
-  raise ArgumentError.new if segments.size < 1 || segments.size > 4
-  (0..3).collect do |i|
-    if i >= segments.size
-      nil
+  def self.run_command(cmd, throw_on_error = true)
+    res = `#{cmd} 2>&1`
+    raise RuntimeError.new(res) if throw_on_error && $?.to_i != 0
+    [$?.to_i, res.chomp]
+  end
+
+  def self.parse_version_str(str)
+    segments = str.split('.', -1)
+    raise ArgumentError.new if segments.size < 1 || segments.size > 4
+    (0..3).collect do |i|
+      if i >= segments.size
+        nil
+      else
+        raise ArgumentError.new unless segments[i] =~ /^(0|[1-9][0-9]*)$/
+        Integer($1)
+      end
+    end
+  end
+
+  def self.get_ant_version(path)
+    code, res = run_command("#{path} -version", true)
+    if res =~ /^Apache Ant version ([0-9]+)\.([0-9]+)\.([0-9]+) /
+      [Integer($1), Integer($2), Integer($3), nil]
     else
-      raise ArgumentError.new unless segments[i] =~ /^(0|[1-9][0-9]*)$/
-      Integer($1)
+      nil
+    end
+  end
+
+  def self.get_gmcs_version(path)
+    code, res = run_command("#{path} --version", true)
+    if res =~ /^Mono C# compiler version ([0-9]+)\.([0-9]+)\.([0-9]+)\.([0-9]+)$/
+      [Integer($1), Integer($2), Integer($3), Integer($4)]
+    else
+      nil
+    end
+  end
+
+  def self.get_mono_version(path)
+    code, res = run_command("#{path} --version", true)
+    if res =~ /^Mono JIT compiler version ([0-9]+)\.([0-9]+)\.([0-9]+) /
+      [Integer($1), Integer($2), Integer($3), nil]
+    else
+      nil
+    end
+  end
+
+  def self.get_nunit_console_version(path)
+    # Remove C:\NUnitPrimaryTrace.txt: this bug should be fixed in NUnit 2.5.
+    code, res = run_command("#{path} -help; rm -f 'C:\\NUnitPrimaryTrace.txt'", true)
+    if res =~ /^NUnit version ([0-9]+)\.([0-9]+)\.([0-9]+)$/
+      [Integer($1), Integer($2), Integer($3), nil]
+    else
+      nil
     end
   end
 end
 
-def find_command(name)
-  code, res = run_command("which #{name}", false)
-  if code == 0
-    res
-  elsif code == 256
-    nil
-  else
-    raise RuntimeError.new(res)
+class FileFinder
+  def usr_dir
+    if !@usr_dir
+      ruby_path = find_file_helper(nil, 'ruby')
+      raise RuntimeError.new('Cannot infer location of /usr directory') unless ruby_path
+      bin_dir = File.dirname(ruby_path)
+      raise RuntimeError.new('Cannot infer location of /usr directory') unless bin_dir
+      raise RuntimeError.new('Cannot infer location of /usr directory') unless File.basename(bin_dir) == 'bin'
+      usr_dir = File.dirname(bin_dir)
+      raise RuntimeError.new('Cannot infer location of /usr directory') unless usr_dir
+      @usr_dir = Helpers::normalize_dir(usr_dir)
+    end
+    @usr_dir
   end
+
+  def find_file(messages, search_path, file_name, &version_block)
+    path = find_file_helper(search_path, file_name)
+    if !path
+      messages << "Could not find \"#{file_name}\" on path."
+      return nil
+    end
+
+    # Check versions if required.
+    if version_block
+      res = version_block.call(path)
+      if res.is_a?(Array)
+        version_str = res.compact.join('.')
+        messages << "Please install version #{version_str} or higher of \"#{file_name}\"."
+        return nil
+      end
+      if res != true
+        messages << "Could not get version information for \"#{file_name}\"."
+        return nil
+      end
+    end
+
+    path
+  end
+
+  def find_file_helper(search_path, file_name)
+    if search_path
+      pattern = File.join(search_path, '**', file_name)
+      paths = Dir.glob(pattern)
+      path = paths.size > 0 ? paths[0] : nil
+    else
+      code, res = Helpers::run_command("which #{file_name}", false)
+      if code == 0
+        path = res
+      elsif code == 256
+        path = nil
+      else
+        raise RuntimeError.new(res)
+      end
+    end
+    path
+  end
+  private :find_file_helper
 end
 
-def find_command_version(messages, name, version_str, &block)
-  min_major, min_minor, min_build, min_revision = parse_version_str(version_str)
-
-  path = find_command(name)
-  if !path
-    messages << "Could not find \"#{name}\" on path."
-    return nil
-  end
-
-  res = block.call(path)
-  if !res
-    messages << "Could not get version information for \"#{name}\"."
-    return nil
-  end
-
-  major, minor, build, revision = res
-  if major < min_major || major == min_major && minor < min_minor
-    messages << "Please install version #{min_major}.#{min_minor} or higher of \"#{name}\"."
-    return nil
-  end
-
-  path
-end
-
-def get_ant_version(path)
-  code, res = run_command("#{path} -version", true)
-  if res =~ /^Apache Ant version ([0-9]+)\.([0-9]+)\.([0-9]+) /
-    [Integer($1), Integer($2), Integer($3), nil]
-  else
-    nil
-  end
-end
-
-def get_gmcs_version(path)
-  code, res = run_command("#{path} --version", true)
-  if res =~ /^Mono C# compiler version ([0-9]+)\.([0-9]+)\.([0-9]+)\.([0-9]+)$/
-    [Integer($1), Integer($2), Integer($3), Integer($4)]
-  else
-    nil
-  end
-end
-
-def get_mono_version(path)
-  code, res = run_command("#{path} --version", true)
-  if res =~ /^Mono JIT compiler version ([0-9]+)\.([0-9]+)\.([0-9]+) /
-    [Integer($1), Integer($2), Integer($3), nil]
-  else
-    nil
-  end
-end
-
-def get_nunit_console_version(path)
-  # Remove C:\NUnitPrimaryTrace.txt: this bug should be fixed in NUnit 2.5.
-  code, res = run_command("#{path} -help; rm -f 'C:\\NUnitPrimaryTrace.txt'", true)
-  if res =~ /^NUnit version ([0-9]+)\.([0-9]+)\.([0-9]+)$/
-    [Integer($1), Integer($2), Integer($3), nil]
-  else
-    nil
-  end
-end
-
-def find_nunit_framework(messages, nunit_console_path)
-  usr_dir = File.dirname(File.dirname(nunit_console_path))
-  paths = Dir.glob("#{usr_dir}/lib/cli/nunit*/nunit.framework.dll")
-  if paths.size < 1
-    messages << "Could not find \"nunit.framework.dll\" under \"#{usr_dir}\"."
-    return nil
-  end
-  paths[0]
+def check_version_helper(min_version_str, version)
+  return nil if version.nil?
+  min_version = Helpers::parse_version_str(min_version_str)
+  min_major, min_minor, min_build, min_revision = min_version
+  major, minor, build, revision = version
+  return min_version if major < min_major || major == min_major && minor < min_minor
+  true
 end
 
 messages = []
-prefix = nil
+target_dir = nil
 args = ARGV.clone
 while arg = args.shift
   if arg =~ /^--prefix=(.+)$/
-    prefix = $1
+    target_dir = Helpers::normalize_dir($1)
   end
 end
-messages << 'Must specify installation directory via "--prefix".' if !prefix
+messages << 'Must specify target directory via "--prefix".' if !target_dir
 
 if !messages.empty?
   messages.each do |message|
@@ -120,22 +149,36 @@ end
 
 properties = {
   'configuration' => 'debug',
-  'install-path' => prefix
+  'target-dir' => target_dir
 }
+target_bin_dir = File.join(target_dir, 'bin')
 
-find_command_version(messages, 'ant', '1.7') {|path| get_ant_version(path)}
+f = FileFinder.new
 
-stable_gmcs_path = find_command_version(messages, 'gmcs', '1.9') {|path| get_gmcs_version(path)}
+f.find_file(messages, nil, 'ant') do |path|
+  check_version_helper('1.7', Helpers::get_ant_version(path))
+end
+
+stable_gmcs_path = f.find_file(messages, nil, 'gmcs') do |path|
+  check_version_helper('1.9', Helpers::get_gmcs_version(path))
+end
 properties['stable-gmcs-path'] = stable_gmcs_path if stable_gmcs_path
 
-stable_mono_path = find_command_version(messages, 'mono', '1.9') {|path| get_mono_version(path)}
-properties['stable-mono-path'] = stable_mono_path if stable_mono_path
-
-nunit_console_path = find_command_version(messages, 'nunit-console', '2.4') {|path| get_nunit_console_version(path)}
+nunit_console_path = f.find_file(messages, File.join(f.usr_dir, 'lib', 'nunit'), 'nunit-console.exe') do |path|
+  check_version_helper('2.4', Helpers::get_nunit_console_version(path))
+end
 properties['nunit-console-path'] = nunit_console_path if nunit_console_path
 
-nunit_framework_path = find_nunit_framework(messages, nunit_console_path)
-properties['nunit-framework-path'] = nunit_framework_path if nunit_framework_path
+nunit_lib_dir = f.find_file(messages, File.join(f.usr_dir, 'lib', 'cli'), 'nunit-2.4')
+properties['nunit-lib-dir'] = nunit_lib_dir if nunit_lib_dir
+
+target_gacutil_path = f.find_file(messages, target_bin_dir, 'gacutil')
+properties['target-gacutil-path'] = target_gacutil_path if target_gacutil_path
+
+target_mono_path = f.find_file(messages, target_bin_dir, 'mono') do |path|
+  check_version_helper('2.8.1', Helpers::get_mono_version(path))
+end
+properties['target-mono-path'] = target_mono_path if target_mono_path
 
 if !messages.empty?
   messages.each do |message|

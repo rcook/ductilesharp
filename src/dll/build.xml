@@ -1,6 +1,7 @@
 <project name="src" basedir="." default="binplace">
   <import file="../../common.xml"/>
 
+  <property name="ref-paths" value="${target-lib-dir}/dmcs.exe"/>
   <property name="target-path" location="${build-configuration-dir}/Mono.DuctileSharp.dll"/>
 
   <target name="clean">
@@ -12,7 +13,7 @@
   </target>
 
   <target name="compile" depends="prepare">
-    <csc executable="${stable-gmcs-path}" targetType="library" destFile="${target-path}">
+    <csc executable="${stable-gmcs-path}" targetType="library" destFile="${target-path}" references="${ref-paths}">
       <src dir="." includes="*.cs"/>
     </csc>
   </target>

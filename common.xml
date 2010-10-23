@@ -14,14 +14,6 @@
   </condition>
   <fail unless="configuration.found" message="Must specify &quot;configuration&quot; in &quot;common.properties&quot;"/>
 
-  <property name="install-path" value=""/>
-  <condition property="install-path.found">
-    <not>
-      <equals arg1="${install-path}" arg2=""/>
-    </not>
-  </condition>
-  <fail unless="install-path.found" message="Must specify &quot;install-path&quot; in &quot;common.properties&quot;"/>
-
   <property name="nunit-console-path" value=""/>
   <condition property="nunit-console-path.found">
     <not>
@@ -30,13 +22,13 @@
   </condition>
   <fail unless="nunit-console-path.found" message="Must specify &quot;nunit-console-path&quot; in &quot;common.properties&quot;"/>
 
-  <property name="nunit-framework-path" value=""/>
-  <condition property="nunit-framework-path.found">
+  <property name="nunit-lib-dir" value=""/>
+  <condition property="nunit-lib-dir.found">
     <not>
-      <equals arg1="${nunit-framework-path}" arg2=""/>
+      <equals arg1="${nunit-lib-dir}" arg2=""/>
     </not>
   </condition>
-  <fail unless="nunit-framework-path.found" message="Must specify &quot;nunit-framework-path&quot; in &quot;common.properties&quot;"/>
+  <fail unless="nunit-lib-dir.found" message="Must specify &quot;nunit-lib-dir&quot; in &quot;common.properties&quot;"/>
 
   <property name="stable-gmcs-path" value=""/>
   <condition property="stable-gmcs-path.found">
@@ -46,17 +38,37 @@
   </condition>
   <fail unless="stable-gmcs-path.found" message="Must specify &quot;stable-gmcs-path&quot; in &quot;common.properties&quot;"/>
 
-  <property name="stable-mono-path" value=""/>
-  <condition property="stable-mono-path.found">
+  <property name="target-dir" value=""/>
+  <condition property="target-dir.found">
     <not>
-      <equals arg1="${stable-mono-path}" arg2=""/>
+      <equals arg1="${target-dir}" arg2=""/>
     </not>
   </condition>
-  <fail unless="stable-mono-path.found" message="Must specify &quot;stable-mono-path&quot; in &quot;common.properties&quot;"/>
+  <fail unless="target-dir.found" message="Must specify &quot;target-dir&quot; in &quot;common.properties&quot;"/>
 
+  <property name="target-gacutil-path" value=""/>
+  <condition property="target-gacutil-path.found">
+    <not>
+      <equals arg1="${target-gacutil-path}" arg2=""/>
+    </not>
+  </condition>
+  <fail unless="target-gacutil-path.found" message="Must specify &quot;target-gacutil-path&quot; in &quot;common.properties&quot;"/>
+
+  <property name="target-mono-path" value=""/>
+  <condition property="target-mono-path.found">
+    <not>
+      <equals arg1="${target-mono-path}" arg2=""/>
+    </not>
+  </condition>
+  <fail unless="target-mono-path.found" message="Must specify &quot;target-mono-path&quot; in &quot;common.properties&quot;"/>
+
+  <property name="backup-dir" location="${common.base-dir}/backups"/>
   <property name="bin-dir" location="${common.base-dir}/bin"/>
   <property name="bin-configuration-dir" location="${bin-dir}/${configuration}"/>
   <property name="build-dir" location="build"/>
   <property name="build-configuration-dir" location="${build-dir}/${configuration}"/>
+  <property name="resource-dir" location="${common.base-dir}/resources"/>
+  <property name="target-dmcs-path" location="${target-dir}/bin/dmcs"/>
+  <property name="target-lib-dir" location="${target-dir}/lib/mono/4.0"/>
 </project>
 

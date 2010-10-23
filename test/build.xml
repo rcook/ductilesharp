@@ -1,0 +1,8 @@
+<project name="src" basedir="." default="test">
+  <import file="../common.xml"/>
+
+  <target name="test">
+    <ant dir="01-hello-world" target="test" inheritAll="false"/>
+  </target>
+</project>
+
