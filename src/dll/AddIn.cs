@@ -21,6 +21,11 @@ namespace Mono.DuctileSharp
         _detype = true;
         return true;
       }
+      if ("/ductilesharp".Equals(arg, StringComparison.InvariantCultureIgnoreCase))
+      {
+        DisplayHelp();
+        return true;
+      }
       return false;
     }
 
@@ -56,12 +61,22 @@ namespace Mono.DuctileSharp
 
     public AddIn()
     {
-      Console.WriteLine("AddIn..ctor");
     }
 
     public void DoSomething()
     {
       Console.WriteLine("AddIn.DoSomething: detype = {0}", _detype.ToString().ToLowerInvariant());
+    }
+
+    private static void DisplayHelp()
+    {
+      Console.WriteLine(@"DuctileSharp {0}
+
+Detype your C# code!
+http://bitbucket.org/rcook/ductilesharp
+",
+        Helpers.AssemblyVersion
+      );
     }
   }
 }
