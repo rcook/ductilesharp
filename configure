@@ -82,12 +82,21 @@ class FileFinder
     File.join(@opt_dir, *args)
   end
 
-  def find_file(messages, search_paths, file_name, &version_block)
-    path = find_file_helper(search_paths, file_name)
-    if !path
-      messages << "Could not find \"#{file_name}\"."
-      return nil
+  def find_file(messages, search_paths, *file_names, &version_block)
+    file_names.each do |file_name|
+      res = find_file_inner(messages, search_paths, file_name, &version_block)
+      return res if !res.nil?
     end
+    if file_names.size > 1
+      messages << "Could not find one of #{file_names.collect {|f| "\"#{f}\""}.join(', ')}."
+    else
+      messages << "Could not find \"#{file_names.first}\"."
+    end
+  end
+
+  def find_file_inner(messages, search_paths, file_name, &version_block)
+    path = find_file_helper(search_paths, file_name)
+    return nil if !path
 
     # Check versions if required.
     if version_block
@@ -105,6 +114,7 @@ class FileFinder
 
     path
   end
+  private :find_file_inner
 
   def find_file_helper(search_paths, file_name)
     if search_paths
@@ -184,7 +194,7 @@ nunit_console_path = f.find_file(messages, f.usr_dir(%w{lib nunit}), 'nunit-cons
 end
 properties['nunit-console-path'] = nunit_console_path if nunit_console_path
 
-nunit_lib_dir = f.find_file(messages, f.usr_dir(%w{lib cli}), 'nunit-2.4')
+nunit_lib_dir = f.find_file(messages, f.usr_dir(%w{lib cli}), 'nunit-2.4', 'nunit.framework-2.4')
 properties['nunit-lib-dir'] = nunit_lib_dir if nunit_lib_dir
 
 target_gacutil_path = f.find_file(messages, target_bin_dir, 'gacutil')
