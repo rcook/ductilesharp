@@ -173,12 +173,16 @@ properties = {
 target_bin_dir = File.join(target_dir, 'bin')
 
 f = FileFinder.new
-
-ant_contrib_path = f.find_file(messages, [
+ANT_LIB_PATH = [
   f.usr_dir(%w{share java}),
   f.opt_dir(%w{local share java})
-], 'ant-contrib*.jar')
+]
+
+ant_contrib_path = f.find_file(messages, ANT_LIB_PATH, 'ant-contrib*.jar')
 properties['ant-contrib-path'] = ant_contrib_path if ant_contrib_path
+
+ant_dotnet_path = f.find_file(messages, ANT_LIB_PATH, 'ant-dotnet*.jar')
+properties['ant-dotnet-path'] = ant_dotnet_path if ant_dotnet_path
 
 f.find_file(messages, nil, 'ant') do |path|
   check_version_helper('1.7', Helpers::get_ant_version(path))

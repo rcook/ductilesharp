@@ -13,6 +13,14 @@
   </condition>
   <fail unless="ant-contrib-path.found" message="Must specify &quot;ant-contrib-path&quot; in &quot;common.properties&quot;"/>
 
+  <property name="ant-dotnet-path" value=""/>
+  <condition property="ant-dotnet-path.found">
+    <not>
+      <equals arg1="${ant-dotnet-path}" arg2=""/>
+    </not>
+  </condition>
+  <fail unless="ant-dotnet-path.found" message="Must specify &quot;ant-dotnet-path&quot; in &quot;common.properties&quot;"/>
+
   <property name="configuration" value=""/>
   <condition property="configuration.found">
     <not>
@@ -72,6 +80,12 @@
   <taskdef resource="net/sf/antcontrib/antcontrib.properties">
     <classpath>
       <pathelement location="${ant-contrib-path}"/>
+    </classpath>
+  </taskdef>
+
+  <taskdef resource="org/apache/ant/dotnet/antlib.xml">
+    <classpath>
+      <pathelement location="${ant-dotnet-path}"/>
     </classpath>
   </taskdef>
 
