@@ -1,5 +1,9 @@
+syntax: glob
+*.pidb
+
 syntax: regexp
 ^(backups|bin)\/.+$
 ^common\.properties$
-\/build\/.+$
+^DuctileSharp\.userprefs$
+\/(bin|build|test-results)\/.+$
 
